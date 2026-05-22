@@ -79,4 +79,16 @@ namespace Core
         // std::cout << "redenred terrain" << std::endl;
     }
 
+    TerrainRenderable::~TerrainRenderable()
+    {
+        if (VAO != 0)
+        {
+            glDeleteVertexArrays(1, &VAO);
+        }
+        if (VBO != 0)
+        {
+            glDeleteBuffers(1, &VBO);
+        }
+    }
+
 }

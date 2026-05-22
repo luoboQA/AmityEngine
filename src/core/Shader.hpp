@@ -19,8 +19,17 @@ namespace Core {
 class Shader
 {
 public:
-	unsigned int ID;
+	unsigned int ID = 0;
 	Shader();
+	~Shader();
+
+	// Disable copy constructor and copy assignment to prevent double program deletion
+	Shader(const Shader&) = delete;
+	Shader& operator=(const Shader&) = delete;
+
+	// Enable move operations
+	Shader(Shader&& other) noexcept;
+	Shader& operator=(Shader&& other) noexcept;
 
 	void use() const;
 	void setShader(const char* vertexPath, const char* fragmentPath);

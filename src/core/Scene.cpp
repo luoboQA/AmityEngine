@@ -14,15 +14,22 @@ Scene::Scene()
 Scene::~Scene()
 {
     if (glfwGetCurrentContext()) { // if using GLFW
-        glDeleteFramebuffers(1, &m_fbo);
-        glDeleteTextures(1, &m_colorTexture);
-        glDeleteRenderbuffers(1, &m_depthBuffer);
+        if (m_fbo != 0) glDeleteFramebuffers(1, &m_fbo);
+        if (m_colorTexture != 0) glDeleteTextures(1, &m_colorTexture);
+        if (m_depthBuffer != 0) glDeleteRenderbuffers(1, &m_depthBuffer);
+        if (m_quadVAO != 0) glDeleteVertexArrays(1, &m_quadVAO);
+        if (m_quadVBO != 0) glDeleteBuffers(1, &m_quadVBO);
     }
 }
 
 // render main image to this FBO, so we can do postprocessing
 void Scene::setupFramebuffer()
 {
+    // Clean up old FBO resources before allocating new ones (prevent resizing leaks!)
+    if (m_fbo != 0) glDeleteFramebuffers(1, &m_fbo);
+    if (m_colorTexture != 0) glDeleteTextures(1, &m_colorTexture);
+    if (m_depthBuffer != 0) glDeleteRenderbuffers(1, &m_depthBuffer);
+
     glGenFramebuffers(1, &m_fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
 
@@ -46,10 +53,12 @@ void Scene::setupFramebuffer()
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    // setup quad for postprocessing
-    setupScreenQuad();
-    m_postProcessShader.setShader("src/shaders/postprocessVert.glsl", "src/shaders/postprocessFrag.glsl");
-
+    // setup quad for postprocessing only once
+    if (m_quadVAO == 0)
+    {
+        setupScreenQuad();
+        m_postProcessShader.setShader("src/shaders/postprocessVert.glsl", "src/shaders/postprocessFrag.glsl");
+    }
 }
 
 

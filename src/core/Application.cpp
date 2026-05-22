@@ -16,6 +16,7 @@ Application::Application(int width, int height) : WIDTH(width), HEIGHT(height), 
     {
         std::cerr << "Couldn't create window :(" << std::endl;
         glfwTerminate();
+        throw std::runtime_error("Failed to create GLFW window");
     }
 
     glfwMakeContextCurrent(m_window);

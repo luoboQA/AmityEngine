@@ -45,7 +45,7 @@ private:
 
 
     // POST PROCESSING
-    GLuint m_quadVAO, m_quadVBO;
+    GLuint m_quadVAO{0}, m_quadVBO{0};
     Shader m_postProcessShader; 
     void setupScreenQuad();
 

@@ -20,7 +20,10 @@ Sound::Sound(const std::string& path) {
         m_valid = setup(audioData, sfinfo.channels, sfinfo.samplerate);
     }
 
-    sf_close(sndfile);
+    if (sndfile)
+    {
+        sf_close(sndfile);
+    }
 }
 
 bool Sound::setup(const std::vector<short>& audioData, int channels, int sampleRate)

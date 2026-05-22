@@ -84,6 +84,13 @@ void Mesh::setupMesh()
     glBindVertexArray(0); // release VAO
 }
 
+Mesh::~Mesh()
+{
+    if (VAO != 0) glDeleteVertexArrays(1, &VAO);
+    if (VBO != 0) glDeleteBuffers(1, &VBO);
+    if (EBO != 0) glDeleteBuffers(1, &EBO);
+}
+
 void Mesh::draw()
 {
     glBindVertexArray(VAO);

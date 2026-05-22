@@ -18,6 +18,7 @@ class TerrainRenderable : public Renderable
 {
 public:
     TerrainRenderable(const TerrainSettings& settings, std::shared_ptr<Shader> shader);
+    ~TerrainRenderable() override;
     void render(const Scene& scene, double dt) override;
 
 private:

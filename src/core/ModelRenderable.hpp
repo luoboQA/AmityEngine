@@ -23,6 +23,7 @@ public:
     {
         setupMesh();
     }
+    ~Mesh();
     void draw();
 
     glm::vec4 getMaterialColor() const { return materialColor; }
