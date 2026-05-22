@@ -112,6 +112,24 @@ add_custom_command(
     COMMENT "copy shaders to PanTiltShowcase build dir"
 )
 
+# Canyon Siege Game Target (CanyonSiege)
+add_executable(CanyonSiege
+    src/games/CanyonSiege/main.cpp
+    src/games/CanyonSiege/CanyonSiegeGame.cpp
+)
+target_link_libraries(CanyonSiege PRIVATE AmityCore)
+target_include_directories(CanyonSiege PRIVATE src/games/CanyonSiege)
+target_include_directories(CanyonSiege PRIVATE src/third_party/stb)
+
+# Post-Build Custom Command to copy shaders next to the CanyonSiege executable
+add_custom_command(
+    TARGET CanyonSiege POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${CMAKE_SOURCE_DIR}/src/shaders"
+            "$<TARGET_FILE_DIR:CanyonSiege>/shaders"
+    COMMENT "copy shaders to CanyonSiege build dir"
+)
+
 # Testing Suite Integration
 enable_testing()
 add_subdirectory(tests)

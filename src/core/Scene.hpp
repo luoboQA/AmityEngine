@@ -31,6 +31,7 @@ public:
 
     void addRenderable(std::shared_ptr<Renderable> renderable) { m_renderables.push_back(renderable); }
     void addEntity(std::shared_ptr<Entity> entity) { m_entities.push_back(entity); }
+    void removeEntity(std::shared_ptr<Entity> entity) { m_entitiesToRemove.push_back(entity); }
 
     void setScreenSize(int width, int height);
     void setupFramebuffer();
@@ -38,6 +39,7 @@ public:
 private:
     std::vector<std::shared_ptr<Renderable>> m_renderables;
     std::vector<std::shared_ptr<Entity>> m_entities;
+    std::vector<std::shared_ptr<Entity>> m_entitiesToRemove;
     std::shared_ptr<Entity> m_cameraEntity;
 
 

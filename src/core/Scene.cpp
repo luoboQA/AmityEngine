@@ -16,10 +16,7 @@ void Scene::setCameraEntity(std::shared_ptr<Entity> camera)
 {
     if (m_cameraEntity)
     {
-        m_entities.erase(
-            std::remove(m_entities.begin(), m_entities.end(), m_cameraEntity),
-            m_entities.end()
-        );
+        std::erase(m_entities, m_cameraEntity);
     }
     m_cameraEntity = camera;
     if (m_cameraEntity)
@@ -192,6 +189,15 @@ void Scene::update(double dt)
         entity->update(dt);
     }
 
+    // Safely remove queued entities after the update iteration to avoid iterator invalidation
+    if (!m_entitiesToRemove.empty())
+    {
+        for (const auto& entity : m_entitiesToRemove)
+        {
+            std::erase(m_entities, entity);
+        }
+        m_entitiesToRemove.clear();
+    }
 }
 
 void Scene::setScreenSize(int width, int height)
