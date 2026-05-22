@@ -1,4 +1,5 @@
 #include "Application.hpp"
+#include "UIRenderer.hpp"
 
 namespace Core {
 
@@ -47,11 +48,12 @@ Application::Application(int width, int height) : WIDTH(width), HEIGHT(height), 
     glfwSetWindowSizeCallback(m_window, Application::onResizeCallback);
 
     setupProjectionMatrix();
-
+    UIRenderer::Init(WIDTH, HEIGHT);
 }
 
 Application::~Application()
 {
+    UIRenderer::Shutdown();
     // cleanup
     glfwDestroyWindow(m_window);
     glfwTerminate();
@@ -77,6 +79,7 @@ void Application::onResize(GLFWwindow* window, int width, int height)
     glViewport(0, 0, WIDTH, HEIGHT);
     setupProjectionMatrix();
     m_scene.setScreenSize(WIDTH, HEIGHT);
+    UIRenderer::SetScreenSize(WIDTH, HEIGHT);
 }
 
 void Application::setupProjectionMatrix()
@@ -111,6 +114,10 @@ int Application::run()
         glClearColor(m_clearColor.r, m_clearColor.g, m_clearColor.b, m_clearColor.a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         m_scene.render(dt);
+
+        UIRenderer::Begin();
+        renderUI();
+        UIRenderer::End();
 
         glfwSwapBuffers(m_window);
         glfwPollEvents();

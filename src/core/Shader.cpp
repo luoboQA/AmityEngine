@@ -1,4 +1,5 @@
 #include "Shader.hpp"
+#include <vector>
 
 namespace Core {
 
@@ -49,7 +50,7 @@ void Shader::setShader(const char* vertexPath, const char* fragmentPath) {
 		fragmentCode = fShaderStream.str();
 	}
 	catch (std::ifstream::failure e) {
-		std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ" << std::endl;
+		std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ at " << vertexPath << " or " << fragmentPath << std::endl;
 	}
 
 	const char* vShaderCode = vertexCode.c_str();

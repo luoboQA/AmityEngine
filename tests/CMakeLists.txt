@@ -19,6 +19,7 @@ add_executable(AmityTests
     TestEntityComponent.cpp
     TestScene.cpp
     TestPanTilt.cpp
+    TestUI.cpp
 )
 
 # Link tests to the Core engine and GoogleTest libraries

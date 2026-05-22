@@ -7,6 +7,11 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Enable parallel compilation for MSVC to dramatically speed up Windows builds
+if(MSVC)
+    add_compile_options(/MP)
+endif()
+
 # Find Package Dependencies (needed by core engine)
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
@@ -28,6 +33,8 @@ add_library(AmityCore STATIC
     src/core/Scene.cpp
     src/core/Entity.cpp
     src/core/Sound.cpp
+    src/core/FontManager.cpp
+    src/core/UIRenderer.cpp
 )
 
 # Core Include Directories
@@ -66,6 +73,43 @@ add_custom_command(
             "${CMAKE_SOURCE_DIR}/src/shaders"
             "$<TARGET_FILE_DIR:Amity>/shaders"
     COMMENT "copy shaders to build dir"
+)
+
+
+# Voxel Minecraft Clone Executable Target (AmityCraft)
+add_executable(AmityCraft
+    src/games/AmityCraft/main.cpp
+    src/games/AmityCraft/CraftMinerGame.cpp
+    src/games/AmityCraft/PlayerController.cpp
+    src/games/AmityCraft/VoxelWorld.cpp
+)
+target_link_libraries(AmityCraft PRIVATE AmityCore)
+target_include_directories(AmityCraft PRIVATE src/games/AmityCraft)
+
+# Post-Build Custom Command to copy shaders next to the AmityCraft executable
+add_custom_command(
+    TARGET AmityCraft POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${CMAKE_SOURCE_DIR}/src/shaders"
+            "$<TARGET_FILE_DIR:AmityCraft>/shaders"
+    COMMENT "copy shaders to AmityCraft build dir"
+)
+
+# Pan/Tilt Camera Showcase Target (PanTiltShowcase)
+add_executable(PanTiltShowcase
+    src/games/PanTiltShowcase/main.cpp
+    src/games/PanTiltShowcase/PanTiltShowcaseGame.cpp
+)
+target_link_libraries(PanTiltShowcase PRIVATE AmityCore)
+target_include_directories(PanTiltShowcase PRIVATE src/games/PanTiltShowcase)
+
+# Post-Build Custom Command to copy shaders next to the PanTiltShowcase executable
+add_custom_command(
+    TARGET PanTiltShowcase POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${CMAKE_SOURCE_DIR}/src/shaders"
+            "$<TARGET_FILE_DIR:PanTiltShowcase>/shaders"
+    COMMENT "copy shaders to PanTiltShowcase build dir"
 )
 
 # Testing Suite Integration

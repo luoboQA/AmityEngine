@@ -28,6 +28,7 @@ public:
     int run();
 
     virtual void update(double dt) = 0;
+    virtual void renderUI() {}
 
 protected:
     std::string m_appName{"Engine Core"};
