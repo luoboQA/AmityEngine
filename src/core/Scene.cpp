@@ -1,6 +1,7 @@
 #include "Scene.hpp"
 #include "MeshComponent.hpp"
 #include <GLFW/glfw3.h>
+#include <algorithm>
 
 namespace Core {
 
@@ -9,6 +10,22 @@ Scene::Scene()
     m_cameraEntity = std::make_shared<Entity>();
     m_cameraEntity->addComponent<CameraComponent>(90.0f, 1280.0f / 720.0f, 0.1f, 5000.0f);
     m_entities.push_back(m_cameraEntity);
+}
+
+void Scene::setCameraEntity(std::shared_ptr<Entity> camera)
+{
+    if (m_cameraEntity)
+    {
+        m_entities.erase(
+            std::remove(m_entities.begin(), m_entities.end(), m_cameraEntity),
+            m_entities.end()
+        );
+    }
+    m_cameraEntity = camera;
+    if (m_cameraEntity)
+    {
+        m_entities.push_back(m_cameraEntity);
+    }
 }
 
 Scene::~Scene()

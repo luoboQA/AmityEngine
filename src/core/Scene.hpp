@@ -25,7 +25,7 @@ public:
 
     // getters
     std::shared_ptr<Entity> getCameraEntity() const { return m_cameraEntity; }
-    void setCameraEntity(std::shared_ptr<Entity> camera) { m_cameraEntity = camera; }
+    void setCameraEntity(std::shared_ptr<Entity> camera);
     glm::mat4 getView() const;
     glm::mat4 getProjection() const { return m_projection; }
 

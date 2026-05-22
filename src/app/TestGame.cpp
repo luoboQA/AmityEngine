@@ -1,5 +1,6 @@
 #include "TestGame.hpp"
-#include <EntityFactory.hpp>
+#include <factory/EntityFactory.hpp>
+#include <factory/CameraFactory.hpp>
 
 TestGame::TestGame() : Application(1280, 720), m_music("soundAssets/ItWontStopRainingHere.ogg")
 {
@@ -30,6 +31,10 @@ void TestGame::init()
 
     auto droneEntity = EntityFactory::CreateDrone(shader);
     m_scene.addEntity(droneEntity);
+
+    // custom pan/tilt camera
+    auto panTiltCamera = CameraFactory::CreatePanTiltCamera();
+    m_scene.setCameraEntity(panTiltCamera);
 
     // initial cam test pos
     if (auto cam = m_scene.getCameraEntity())
