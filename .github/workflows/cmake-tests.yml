@@ -1,0 +1,53 @@
+name: CMake Build and Test Suite
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Debug
+
+jobs:
+  build-and-test:
+    name: Build & Test (Windows MSVC)
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up MSBuild
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Set up vcpkg Caching
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/AppData/Local/vcpkg/archives
+          ${{ github.workspace }}/build/vcpkg_installed
+        key: ${{ runner.os }}-vcpkg-${{ hashFiles('**/vcpkg.json') }}
+        restore-keys: |
+          ${{ runner.os }}-vcpkg-
+
+    - name: Install Dependencies via vcpkg
+      run: |
+        vcpkg install glfw3 glm assimp openal-soft libsndfile --triplet x64-windows
+
+    - name: Configure CMake
+      run: |
+        cmake -B ${{ github.workspace }}/build -S ${{ github.workspace }} `
+          -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} `
+          -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" `
+          -DVCPKG_TARGET_TRIPLET=x64-windows
+
+    - name: Build AmityTests Target
+      run: |
+        cmake --build ${{ github.workspace }}/build --config ${{ env.BUILD_TYPE }} --target AmityTests -j 4
+
+    - name: Execute Automated Unit Tests (CTest)
+      working-directory: ${{ github.workspace }}/build
+      run: |
+        ctest -C ${{ env.BUILD_TYPE }} --output-on-failure
