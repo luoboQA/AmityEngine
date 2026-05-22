@@ -1,38 +1,19 @@
 #include "Entity.hpp"
-#include "ModelRenderable.hpp"
 
 namespace Core {
 
 Entity::Entity()
 {
-    // default entity constructor
 }
 
-Entity::Entity(ModelConfig modelConfig, std::shared_ptr<Shader> shader)
+Entity::~Entity()
 {
-    auto modelRenderable = std::make_shared<ModelRenderable>(modelConfig, shader);
-    setRenderable(modelRenderable);
-}
-
-void Entity::render(const Scene& scene, double dt)
-{
-    if (m_renderable)
+    for (auto& comp : m_components)
     {
-        this->updateRenderableModelMatrix();
-        m_renderable->render(scene, dt);
-    }
-}
-
-void Entity::updateRenderableModelMatrix()
-{
-    if (m_renderable)
-    {
-        glm::mat4 model{1.0f};
-        model = glm::translate(model, m_position);
-        model = model * glm::mat4(m_rotation);
-        model = glm::scale(model, glm::vec3(m_renderable->getScale()));
-
-        m_renderable->setModelMatrix(model);
+        if (comp)
+        {
+            comp->setOwner(nullptr);
+        }
     }
 }
 
@@ -41,4 +22,19 @@ void Entity::rotate(float angle, glm::vec3 axis)
     m_rotation = glm::rotate(glm::mat4(m_rotation), angle, axis); 
 }
 
+void Entity::lookAt(const glm::vec3& target)
+{
+    if (m_position == target) return;
+    glm::mat4 view = glm::lookAt(m_position, target, glm::vec3(0.0f, 1.0f, 0.0f));
+    m_rotation = glm::inverse(glm::mat3(view));
 }
+
+void Entity::update(double dt)
+{
+    for (auto& comp : m_components)
+    {
+        comp->update(dt);
+    }
+}
+
+} // namespace Core

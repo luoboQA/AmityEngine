@@ -17,7 +17,6 @@ add_executable(Amity
     src/core/TerrainRenderable.cpp
     src/core/Scene.cpp
     src/core/Entity.cpp
-    src/core/Camera.cpp
     src/core/Sound.cpp
 )
 

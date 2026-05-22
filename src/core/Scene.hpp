@@ -1,5 +1,5 @@
 #pragma once
-#include "Camera.hpp"
+#include "CameraComponent.hpp"
 #include "Renderable.hpp"
 #include "Entity.hpp"
 #include <AL/al.h>
@@ -24,8 +24,9 @@ public:
     virtual void update(double dt);
 
     // getters
-    Camera& getCamera() { return m_camera; }
-    glm::mat4 getView() const { return m_camera.getView(); }
+    std::shared_ptr<Entity> getCameraEntity() const { return m_cameraEntity; }
+    void setCameraEntity(std::shared_ptr<Entity> camera) { m_cameraEntity = camera; }
+    glm::mat4 getView() const;
     glm::mat4 getProjection() const { return m_projection; }
 
     void setProjectionMatrix(glm::mat4 p) { m_projection = p; }
@@ -40,7 +41,7 @@ private:
     glm::mat4 m_projection;
     std::vector<std::shared_ptr<Renderable>> m_renderables;
     std::vector<std::shared_ptr<Entity>> m_entities;
-    Camera m_camera;
+    std::shared_ptr<Entity> m_cameraEntity;
 
 
     // POST PROCESSING

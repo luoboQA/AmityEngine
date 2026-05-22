@@ -1,12 +1,14 @@
 #include "Scene.hpp"
-#include "CollisionEntity.hpp"
+#include "MeshComponent.hpp"
 #include <GLFW/glfw3.h>
 
 namespace Core {
 
 Scene::Scene()
 {
-
+    m_cameraEntity = std::make_shared<Entity>();
+    m_cameraEntity->addComponent<CameraComponent>(90.0f, 1280.0f / 720.0f, 0.1f, 5000.0f);
+    m_entities.push_back(m_cameraEntity);
 }
 
 Scene::~Scene()
@@ -46,7 +48,7 @@ void Scene::setupFramebuffer()
 
     // setup quad for postprocessing
     setupScreenQuad();
-    m_postProcessShader.setShader("shaders/postprocessVert.glsl", "shaders/postprocessFrag.glsl");
+    m_postProcessShader.setShader("src/shaders/postprocessVert.glsl", "src/shaders/postprocessFrag.glsl");
 
 }
 
@@ -68,7 +70,10 @@ void Scene::render(double dt)
     // entities
     for (const auto& entity : m_entities)
     {
-        entity->render(*this, dt);
+        if (auto meshComp = entity->getComponent<MeshComponent>())
+        {
+            meshComp->draw(*this, dt);
+        }
     }
 
 
@@ -102,11 +107,33 @@ void Scene::setupScreenQuad()
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 }
 
+glm::mat4 Scene::getView() const
+{
+    if (m_cameraEntity)
+    {
+        if (auto cameraComp = m_cameraEntity->getComponent<CameraComponent>())
+        {
+            return cameraComp->getViewMatrix();
+        }
+    }
+    return glm::mat4(1.0f);
+}
+
 void Scene::update(double dt)
 {
     // update logic
-    glm::vec3 forwardVec = m_camera.forwardVector();
-    glm::vec3 pos = m_camera.getPosition();
+    glm::vec3 forwardVec{0.0f, 0.0f, -1.0f};
+    glm::vec3 pos{0.0f};
+
+    if (m_cameraEntity)
+    {
+        pos = m_cameraEntity->getPosition();
+        if (auto cameraComp = m_cameraEntity->getComponent<CameraComponent>())
+        {
+            forwardVec = cameraComp->forwardVector();
+        }
+    }
+
     glm::vec3 upVec{0.0f, 1.0f, 0.0f};
     ALfloat listenerOrientation[] = {
         forwardVec.x, forwardVec.y, forwardVec.z, upVec.x, upVec.y, upVec.z
@@ -117,17 +144,7 @@ void Scene::update(double dt)
     // update entities
     for (const auto& entity : m_entities)
     {
-        // velocity
-        entity->translate(entity->getVelocity() * static_cast<float>(dt));
-        // force (acceleration)
-        entity->setVelocity(entity->getVelocity() + entity->getForce() * static_cast<float>(dt));
-
-
-        // perform physics operations
-        if (auto physicsEntity = std::dynamic_pointer_cast<CollisionEntity>(entity))
-        {
-            // TODO physics
-        }
+        entity->update(dt);
     }
 
 }
