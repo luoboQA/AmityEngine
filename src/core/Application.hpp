@@ -34,7 +34,6 @@ protected:
     glm::vec4 m_clearColor{0.1f, 0.1f, 0.1f, 1.0f};
 
     void setupProjectionMatrix();
-    glm::mat4 m_projection;
 
     GLFWwindow* m_window;
 

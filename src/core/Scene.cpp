@@ -25,6 +25,11 @@ void Scene::setCameraEntity(std::shared_ptr<Entity> camera)
     if (m_cameraEntity)
     {
         m_entities.push_back(m_cameraEntity);
+        // Automatically synchronize the newly attached camera's aspect ratio to the current framebuffer aspect
+        if (auto cameraComp = m_cameraEntity->getComponent<CameraComponent>())
+        {
+            cameraComp->setAspect(static_cast<float>(m_fboWidth) / m_fboHeight);
+        }
     }
 }
 
@@ -143,6 +148,20 @@ glm::mat4 Scene::getView() const
         }
     }
     return glm::mat4(1.0f);
+}
+
+glm::mat4 Scene::getProjection() const
+{
+    if (m_cameraEntity)
+    {
+        if (auto cameraComp = m_cameraEntity->getComponent<CameraComponent>())
+        {
+            return cameraComp->getProjectionMatrix();
+        }
+    }
+    // Dynamic fallback if no active camera is present
+    float aspect = (m_fboHeight > 0) ? (static_cast<float>(m_fboWidth) / m_fboHeight) : 1.333f;
+    return glm::perspective(glm::radians(90.0f), aspect, 0.1f, 5000.0f);
 }
 
 void Scene::update(double dt)

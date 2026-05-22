@@ -27,9 +27,7 @@ public:
     std::shared_ptr<Entity> getCameraEntity() const { return m_cameraEntity; }
     void setCameraEntity(std::shared_ptr<Entity> camera);
     glm::mat4 getView() const;
-    glm::mat4 getProjection() const { return m_projection; }
-
-    void setProjectionMatrix(glm::mat4 p) { m_projection = p; }
+    glm::mat4 getProjection() const;
 
     void addRenderable(std::shared_ptr<Renderable> renderable) { m_renderables.push_back(renderable); }
     void addEntity(std::shared_ptr<Entity> entity) { m_entities.push_back(entity); }
@@ -38,7 +36,6 @@ public:
     void setupFramebuffer();
 
 private:
-    glm::mat4 m_projection;
     std::vector<std::shared_ptr<Renderable>> m_renderables;
     std::vector<std::shared_ptr<Entity>> m_entities;
     std::shared_ptr<Entity> m_cameraEntity;

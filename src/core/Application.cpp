@@ -81,8 +81,16 @@ void Application::onResize(GLFWwindow* window, int width, int height)
 
 void Application::setupProjectionMatrix()
 {
-    m_projection = glm::perspective(glm::radians(90.0f), (static_cast<float>(WIDTH) / HEIGHT), 0.1f, 5000.0f);
-    m_scene.setProjectionMatrix(m_projection);
+    float aspect = (HEIGHT > 0) ? (static_cast<float>(WIDTH) / HEIGHT) : 1.333f;
+
+    // Synchronize the active camera aspect ratio if it exists!
+    if (auto cameraEntity = m_scene.getCameraEntity())
+    {
+        if (auto cameraComp = cameraEntity->getComponent<CameraComponent>())
+        {
+            cameraComp->setAspect(aspect);
+        }
+    }
 }
 
 int Application::run()

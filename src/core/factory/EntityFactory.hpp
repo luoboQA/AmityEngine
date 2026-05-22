@@ -4,6 +4,7 @@
 #include "RigidBodyComponent.hpp"
 #include "ModelRenderable.hpp"
 #include "Shader.hpp"
+#include "ResourceManager.hpp"
 #include <memory>
 
 namespace Core {
@@ -16,10 +17,7 @@ public:
         auto tree = std::make_shared<Entity>();
         tree->setPosition({0.0f, 10.0f, 0.0f});
 
-        auto model = std::make_shared<ModelRenderable>(
-            ModelConfig{"LowPolyAssets/Tree.glb", 20.0f, 2.0f}, 
-            shader
-        );
+        auto model = ResourceManager::GetModel("LowPolyAssets/Tree.glb", 20.0f, 2.0f, shader);
         tree->addComponent<MeshComponent>(model, shader);
 
         return tree;
@@ -29,10 +27,7 @@ public:
     {
         auto ball = std::make_shared<Entity>();
         
-        auto model = std::make_shared<ModelRenderable>(
-            ModelConfig{"LowPolyAssets/GolfBall.glb", 0.5f, 1.0f}, 
-            shader
-        );
+        auto model = ResourceManager::GetModel("LowPolyAssets/GolfBall.glb", 0.5f, 1.0f, shader);
         ball->addComponent<MeshComponent>(model, shader);
 
         auto physics = ball->addComponent<RigidBodyComponent>();
@@ -46,10 +41,7 @@ public:
     {
         auto drone = std::make_shared<Entity>();
 
-        auto model = std::make_shared<ModelRenderable>(
-            ModelConfig{"LowPolyAssets/Bonsai.glb", 0.05f, 1.0f}, 
-            shader
-        );
+        auto model = ResourceManager::GetModel("LowPolyAssets/Bonsai.glb", 0.05f, 1.0f, shader);
         drone->addComponent<MeshComponent>(model, shader);
 
         auto physics = drone->addComponent<RigidBodyComponent>();

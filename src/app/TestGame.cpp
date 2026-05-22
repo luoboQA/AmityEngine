@@ -1,6 +1,9 @@
 #include "TestGame.hpp"
 #include <factory/EntityFactory.hpp>
 #include <factory/CameraFactory.hpp>
+#include "ResourceManager.hpp"
+
+using namespace Core;
 
 TestGame::TestGame() : Application(1280, 720), m_music("soundAssets/ItWontStopRainingHere.ogg")
 {
@@ -16,11 +19,8 @@ void TestGame::init()
         m_music.play();
     }
 
-    // TESTING CODE
-    auto shader = std::make_shared<Shader>();
-
-    // Compile shader first
-    shader->setShader("src/shaders/vert.glsl", "src/shaders/frag.glsl");
+    // TESTING CODE: Get or compile the default model shader via ResourceManager
+    auto shader = ResourceManager::GetShader("DefaultModelShader", "src/shaders/vert.glsl", "src/shaders/frag.glsl");
 
     // Spawn entities using our new EntityFactory
     auto treeEntity = EntityFactory::CreateTree(shader);

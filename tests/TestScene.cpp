@@ -3,6 +3,7 @@
 #include "Entity.hpp"
 #include "Component.hpp"
 #include "CameraComponent.hpp"
+#include "ResourceManager.hpp"
 #include <memory>
 
 using namespace Core;
@@ -76,4 +77,31 @@ TEST(SceneTest, CameraSwapMemorySafety)
     // 7. Verify the old default camera's reference count dropped to 0
     // If our erase-remove logic works, it is fully deallocated!
     EXPECT_TRUE(weakDefaultCam.expired());
+}
+
+// Test 3: Verify dynamic camera projection changes propagate correctly
+TEST(SceneTest, DynamicCameraProjection)
+{
+    Scene scene;
+    
+    auto cameraEntity = std::make_shared<Entity>();
+    auto cameraComp = cameraEntity->addComponent<CameraComponent>(90.0f, 16.0f / 9.0f, 0.1f, 1000.0f);
+    
+    scene.setCameraEntity(cameraEntity);
+    
+    // Get initial projection matrix
+    glm::mat4 proj90 = scene.getProjection();
+    
+    // Change FOV to 60
+    cameraComp->setFov(60.0f);
+    glm::mat4 proj60 = scene.getProjection();
+    
+    // Verify that the matrices are different (proves dynamic calculation works!)
+    EXPECT_NE(proj90[0][0], proj60[0][0]);
+    EXPECT_NE(proj90[1][1], proj60[1][1]);
+    
+    // Verify aspect ratio changes propagate dynamically too
+    cameraComp->setAspect(1.0f); // Square screen
+    glm::mat4 projSquare = scene.getProjection();
+    EXPECT_NE(proj60[0][0], projSquare[0][0]);
 }
