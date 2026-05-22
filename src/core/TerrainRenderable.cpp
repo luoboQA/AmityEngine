@@ -72,6 +72,11 @@ namespace Core
         m_shader->setMat4("u_View", scene.getView());
         m_shader->setMat4("u_Proj", scene.getProjection());
         m_shader->setVec4("u_MaterialColor", m_terrainSettings.baseColor);
+        
+        // CPU Normal Matrix precomputation (extremely high performance gain over vertex shader inverse math)
+        glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(m_model)));
+        m_shader->setMat3("u_NormalMatrix", normalMatrix);
+
         glBindVertexArray(VAO);
         // glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
         glDrawArrays(GL_TRIANGLES, 0, vertices.size());

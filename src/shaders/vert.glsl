@@ -8,6 +8,7 @@ uniform mat4 u_Model;
 uniform mat4 u_View;
 uniform mat4 u_Proj;
 uniform vec4 u_MaterialColor;
+uniform mat3 u_NormalMatrix;
 
 out vec3 Normal;
 out vec3 FragPos;
@@ -23,7 +24,7 @@ void main()
     TexCoord = aTexCoord;
     MaterialColor = u_MaterialColor;
     
-    Normal = mat3(transpose(inverse(u_Model))) * aNormal; // world space of normal
+    Normal = u_NormalMatrix * aNormal; // world space of normal
 
     gl_Position = u_Proj * u_View * u_Model * v;
 }

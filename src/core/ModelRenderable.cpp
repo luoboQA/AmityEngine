@@ -260,6 +260,11 @@ void ModelRenderable::render(const Scene& scene, double dt)
     m_shader->setMat4("u_Model", m_model);
     m_shader->setMat4("u_View", scene.getView());
     m_shader->setMat4("u_Proj", scene.getProjection()); // TODO setting view & projection can be redundant cus shaders can be reused across renderables
+    
+    // CPU Normal Matrix precomputation (extremely high performance gain over vertex shader inverse math)
+    glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(m_model)));
+    m_shader->setMat3("u_NormalMatrix", normalMatrix);
+
     for (const auto& mesh : meshes)
     {
         // std::cout << "material color: " << mesh->getMaterialColor().y << std::endl;

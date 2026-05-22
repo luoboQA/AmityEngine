@@ -49,12 +49,37 @@ bool Sound::setup(const std::vector<short>& audioData, int channels, int sampleR
 
 }
 
+Sound::Sound(Sound&& other) noexcept : buffer(other.buffer), source(other.source), m_valid(other.m_valid)
+{
+    other.buffer = 0;
+    other.source = 0;
+    other.m_valid = false;
+}
+
+Sound& Sound::operator=(Sound&& other) noexcept
+{
+    if (this != &other)
+    {
+        if (m_valid)
+        {
+            alDeleteSources(1, &source);
+            alDeleteBuffers(1, &buffer);
+        }
+        buffer = other.buffer;
+        source = other.source;
+        m_valid = other.m_valid;
+
+        other.buffer = 0;
+        other.source = 0;
+        other.m_valid = false;
+    }
+    return *this;
+}
+
 Sound::~Sound()
 {
     alDeleteSources(1, &source);
     alDeleteBuffers(1, &buffer);
-
 }
-
 
 }
