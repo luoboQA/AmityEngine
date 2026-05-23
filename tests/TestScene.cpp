@@ -105,3 +105,18 @@ TEST(SceneTest, DynamicCameraProjection)
     glm::mat4 projSquare = scene.getProjection();
     EXPECT_NE(proj60[0][0], projSquare[0][0]);
 }
+
+// Test 4: Verify customizable post-processing shader paths and custom setting
+TEST(SceneTest, CustomizablePostProcessing)
+{
+    Scene scene;
+
+    // 1. Verify default paths are initialized correctly on construction
+    EXPECT_EQ(scene.getPostProcessVertPath(), "src/shaders/postprocessVert.glsl");
+    EXPECT_EQ(scene.getPostProcessFragPath(), "src/shaders/postprocessFrag.glsl");
+
+    // 2. Change shader paths and verify the override is stored successfully
+    scene.setPostProcessShader("custom/vert.glsl", "custom/frag.glsl");
+    EXPECT_EQ(scene.getPostProcessVertPath(), "custom/vert.glsl");
+    EXPECT_EQ(scene.getPostProcessFragPath(), "custom/frag.glsl");
+}

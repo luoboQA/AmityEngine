@@ -80,7 +80,7 @@ void Scene::setupFramebuffer()
     if (m_quadVAO == 0)
     {
         setupScreenQuad();
-        m_postProcessShader.setShader("src/shaders/postprocessVert.glsl", "src/shaders/postprocessFrag.glsl");
+        m_postProcessShader.setShader(m_postProcessVertPath.c_str(), m_postProcessFragPath.c_str());
     }
 }
 
@@ -232,6 +232,16 @@ void Scene::setScreenSize(int width, int height)
     m_fboWidth = width;
     m_fboHeight = height;
     setupFramebuffer();
+}
+
+void Scene::setPostProcessShader(const std::string& vertPath, const std::string& fragPath)
+{
+    m_postProcessVertPath = vertPath;
+    m_postProcessFragPath = fragPath;
+    if (m_quadVAO != 0)
+    {
+        m_postProcessShader.setShader(m_postProcessVertPath.c_str(), m_postProcessFragPath.c_str());
+    }
 }
 
 }

@@ -193,9 +193,62 @@ ray_t get_primary_ray(vec3 cam_local_point, vec3 cam_origin) {
     return ray_t(cam_origin, dir);
 }
 
+// --- OPTICAL & CAMERA SENSOR EFFECT UTILITIES ---
+
+// 1. Peripheral Lens Blur (5-tap fast blur scaled by radius)
+vec3 sampleTextureBlurred(sampler2D tex, vec2 uv, float blurAmount) {
+    vec3 col = texture(tex, uv).rgb;
+    if (blurAmount > 0.001) {
+        float step = blurAmount * 0.003;
+        col += texture(tex, uv + vec2(-step, -step)).rgb;
+        col += texture(tex, uv + vec2(step, -step)).rgb;
+        col += texture(tex, uv + vec2(-step, step)).rgb;
+        col += texture(tex, uv + vec2(step, step)).rgb;
+        col *= 0.2;
+    }
+    return col;
+}
+
+// 2. Dynamic Auto-Gain Control (5-point sparse screen luminance lookup with depth-awareness)
+float getSampleLuminance(vec2 uv) {
+    float depth = texture(depthTexture, uv).r;
+    if (depth >= 0.999) {
+        // Procedural sky and volumetric cloud average luminance estimate.
+        // During daytime, this averages around 0.45, stabilizing the AGC from blowing out the clouds.
+        return 0.45;
+    }
+    vec3 col = texture(screenTexture, uv).rgb;
+    return dot(col, vec3(0.299, 0.587, 0.114));
+}
+
+float getSceneLuminance() {
+    float lumC  = getSampleLuminance(vec2(0.5, 0.5));
+    float lumTL = getSampleLuminance(vec2(0.25, 0.25));
+    float lumTR = getSampleLuminance(vec2(0.75, 0.25));
+    float lumBL = getSampleLuminance(vec2(0.25, 0.75));
+    float lumBR = getSampleLuminance(vec2(0.75, 0.75));
+    
+    return (lumC + lumTL + lumTR + lumBL + lumBR) * 0.2;
+}
+
+// 3. Fixed-Pattern Noise (uncooled sensor row banding)
+float getRowStriping(vec2 uv) {
+    float yPixel = uv.y * iResolution.y;
+    float band = sin(yPixel * 3.14159) * 0.008;
+    float rowVal = random(vec2(floor(yPixel), 17.43));
+    band += (rowVal - 0.5) * 0.035;
+    return band;
+}
+
 void main()
 {
-    vec3 color = texture(screenTexture, TexCoords).rgb;
+    // Flat, sharp screen coordinates (NO barrel distortion, resolving edge artifacts completely!)
+    vec2 toCenter = TexCoords - 0.5;
+    float dist = length(toCenter);
+    float peripheralBlur = smoothstep(0.4, 0.75, dist) * 0.35; // super slight blur at extreme corners
+    
+    // Sample texture with peripheral defocus blur (sharp in center, subtle softening in far corners)
+    vec3 color = sampleTextureBlurred(screenTexture, TexCoords, peripheralBlur);
     float depth = texture(depthTexture, TexCoords).r;
 
     // Only draw volumetric clouds where depth is infinity (background/sky)
@@ -208,21 +261,32 @@ void main()
         ray_t ray = get_primary_ray(point_cam, eye);
         
         vec3 skyColor = render_sky(ray) * cld_brightness;
-        
-        // Add clouds additive/mix onto the empty sky space
         color += skyColor;
     }
 
-    // Add general noise / film grain
-    float rand = random(TexCoords + time / 1000.0);
-    vec3 noiseColor = vec3(rand) * 0.03; // subtle noise
-    color += noiseColor;
+    // --- CAMERA SIMULATION ---
 
-    // Add vignette
-    vec2 direction = TexCoords - 0.5;
-    float distanceFromCenter = length(direction);
-    float vignette = 1.0 - (distanceFromCenter * VIGNETTE_AMOUNT);
-    color *= vignette;
+    // 1. Dynamic Auto-Gain Control (AGC)
+    // Damped curve that stabilizes around 1.0 under standard lighting and clamps at 2.0 max
+    float avgLuminance = getSceneLuminance();
+    float gain = 0.55 / (avgLuminance + 0.2);
+    gain = clamp(gain, 0.4, 2.0);
 
-    FragColor = vec4(color, 1.0);
+    // 2. Grayscale conversion commented out to keep vibrant full colors!
+    // float thermal = dot(color.rgb, vec3(0.299, 0.587, 0.114)) * gain;
+    
+    // Brightness scaling & camera response contrast applied to full RGB channels
+    vec3 baseColor = color.rgb * gain;
+    baseColor = pow(clamp(baseColor, 0.0, 1.0), vec3(1.25)) * 0.95;
+
+    // 3. Layer bloom, dynamic noise, fixed-pattern row bands, and scanlines
+    float luma = dot(baseColor, vec3(0.299, 0.587, 0.114));
+    float bleed = (luma > 0.85) ? 0.05 : 0.0;
+    float noise = random(TexCoords + vec2(sin(time), cos(time)) * 8.5) * 0.05 * (1.0 + 0.6 * gain);
+    float fpn = getRowStriping(TexCoords);
+    float scanline = sin(TexCoords.y * iResolution.y * 2.0) * 0.035;
+
+    // 4. Combine all artifacts and apply physical vignette
+    vec3 composite = (baseColor + vec3(bleed + noise + fpn - scanline)) * clamp(1.0 - dist * dist * 0.85, 0.0, 1.0);
+    FragColor = vec4(clamp(composite, 0.0, 1.0), 1.0);
 }

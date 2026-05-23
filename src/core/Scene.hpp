@@ -35,6 +35,9 @@ public:
 
     void setScreenSize(int width, int height);
     void setupFramebuffer();
+    void setPostProcessShader(const std::string& vertPath, const std::string& fragPath);
+    const std::string& getPostProcessVertPath() const { return m_postProcessVertPath; }
+    const std::string& getPostProcessFragPath() const { return m_postProcessFragPath; }
 
 private:
     std::vector<std::shared_ptr<Renderable>> m_renderables;
@@ -46,6 +49,8 @@ private:
     // POST PROCESSING
     GLuint m_quadVAO{0}, m_quadVBO{0};
     Shader m_postProcessShader; 
+    std::string m_postProcessVertPath{"src/shaders/postprocessVert.glsl"};
+    std::string m_postProcessFragPath{"src/shaders/postprocessFrag.glsl"};
     void setupScreenQuad();
 
 

@@ -41,7 +41,8 @@ public:
     {
         auto drone = std::make_shared<Entity>();
 
-        auto model = ResourceManager::GetModel("LowPolyAssets/Bonsai.glb", 0.05f, 1.0f, shader);
+        auto model = ResourceManager::GetModel("C:/Users/walke/Downloads/drone.obj", 0.05f, 1.0f, shader);
+        // auto model = ResourceManager::GetModel("LowPolyAssets/Bonsai2.glb", 0.05f, 1.0f, shader);
         drone->addComponent<MeshComponent>(model, shader);
 
         auto physics = drone->addComponent<RigidBodyComponent>();
