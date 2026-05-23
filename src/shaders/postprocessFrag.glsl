@@ -212,7 +212,7 @@ vec3 sampleTextureBlurred(sampler2D tex, vec2 uv, float blurAmount) {
 // 2. Dynamic Auto-Gain Control (5-point sparse screen luminance lookup with depth-awareness)
 float getSampleLuminance(vec2 uv) {
     float depth = texture(depthTexture, uv).r;
-    if (depth >= 0.999) {
+    if (depth >= 0.99999) {
         // Procedural sky and volumetric cloud average luminance estimate.
         // During daytime, this averages around 0.45, stabilizing the AGC from blowing out the clouds.
         return 0.45;
@@ -252,7 +252,7 @@ void main()
     float depth = texture(depthTexture, TexCoords).r;
 
     // Only draw volumetric clouds where depth is infinity (background/sky)
-    if (depth >= 0.999)
+    if (depth >= 0.99999)
     {
         vec2 aspect_ratio = vec2(iResolution.x / iResolution.y, 1.0);
         vec3 eye = vec3(0.0, 0.0, 0.0);

@@ -130,6 +130,11 @@ add_custom_command(
     COMMENT "copy shaders to CanyonSiege build dir"
 )
 
+# build Private Games
+if(EXISTS "${CMAKE_SOURCE_DIR}/src/games/PrivateGames/CMakeLists.txt")
+    add_subdirectory(src/games/PrivateGames)
+endif()
+
 # Testing Suite Integration
 enable_testing()
 add_subdirectory(tests)

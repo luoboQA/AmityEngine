@@ -142,7 +142,7 @@ void ModelRenderable::processNode(aiNode *node, const aiScene *scene)
 
 std::unique_ptr<Mesh> ModelRenderable::processMesh(aiMesh *mesh, const aiScene *scene)
 {
-    glm::vec4 materialColor(1.0f);
+    glm::vec4 materialColor(m_config.brightness, m_config.brightness, m_config.brightness, 1.0f);
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
     std::vector<Texture> textures;
