@@ -43,6 +43,11 @@ void TestGame::init()
         cam->lookAt(glm::vec3{0.0f});
     }
     shader->setMat4("u_View", m_scene.getView());
+
+    // key callback
+    getUserInputService().InputBegan.Connect([this](KeyCode keycode){
+        std::cout << "KEY PRESSED:" << static_cast<int>(keycode) << std::endl;
+    });
 }
 
 void TestGame::update(double dt)

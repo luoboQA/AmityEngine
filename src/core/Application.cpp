@@ -44,9 +44,10 @@ Application::Application(int width, int height) : WIDTH(width), HEIGHT(height), 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
 
-    // resize callback
+    // glfw callbacks
     glfwSetWindowUserPointer(m_window, this);
     glfwSetWindowSizeCallback(m_window, Application::onResizeCallback);
+    glfwSetKeyCallback(m_window, Application::onKeyCallback);
 
     setupProjectionMatrix();
     UIRenderer::Init(WIDTH, HEIGHT);
@@ -65,6 +66,25 @@ Application::~Application()
     alcCloseDevice(device);
 }
 
+// key callback -> userinputservice
+void Application::onKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    Application* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
+    if (app)
+        app->onKey(window, key, scancode, action, mods);
+}
+void Application::onKey(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    KeyCode keyCode = static_cast<KeyCode>(key);
+    if (action == GLFW_PRESS)
+    {
+        getUserInputService().InputBegan.fire(keyCode);
+    }
+    else if (action == GLFW_RELEASE)
+    {
+        getUserInputService().InputEnded.fire(keyCode);
+    }
+}
 
 // RESIZING
 void Application::onResizeCallback(GLFWwindow* window, int width, int height)

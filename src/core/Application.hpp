@@ -56,6 +56,10 @@ protected:
     ALCdevice* device;
     ALCcontext* context;
 
+    // key callback
+    static void onKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+    void onKey(GLFWwindow* window, int key, int scancode, int action, int mods);
+
     // resize callback
     static void onResizeCallback(GLFWwindow* window, int width, int height);
     void onResize(GLFWwindow* window, int width, int height);

@@ -13,4 +13,5 @@ public:
 
 private:
     Sound m_music;
+
 };
