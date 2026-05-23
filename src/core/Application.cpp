@@ -19,6 +19,7 @@ Application::Application(int width, int height) : WIDTH(width), HEIGHT(height), 
         glfwTerminate();
         throw std::runtime_error("Failed to create GLFW window");
     }
+    m_userInputService = std::make_unique<UserInputService>(m_window); // user input service needs reference to window
 
     glfwMakeContextCurrent(m_window);
 

@@ -35,6 +35,7 @@ add_library(AmityCore STATIC
     src/core/Sound.cpp
     src/core/FontManager.cpp
     src/core/UIRenderer.cpp
+    src/core/user_input/UserInputService.cpp
 )
 
 # Core Include Directories

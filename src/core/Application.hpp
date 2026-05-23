@@ -11,6 +11,7 @@
 #include "Sound.hpp"
 #include <AL/al.h>
 #include <AL/alc.h>
+#include "user_input/UserInputService.hpp"
 
 namespace Core {
 
@@ -30,6 +31,8 @@ public:
     virtual void update(double dt) = 0;
     virtual void renderUI() {}
 
+    UserInputService& getUserInputService() { return *m_userInputService; }
+
 protected:
     std::string m_appName{"Engine Core"};
     glm::vec4 m_clearColor{0.1f, 0.1f, 0.1f, 1.0f};
@@ -37,6 +40,8 @@ protected:
     void setupProjectionMatrix();
 
     GLFWwindow* m_window;
+
+    std::unique_ptr<UserInputService> m_userInputService;
 
     double m_lastFrameTime;
     double m_startTime;

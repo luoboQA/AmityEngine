@@ -20,6 +20,7 @@ add_executable(AmityTests
     TestScene.cpp
     TestPanTilt.cpp
     TestUI.cpp
+    TestUserInput.cpp
 )
 
 # Link tests to the Core engine and GoogleTest libraries
