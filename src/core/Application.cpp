@@ -23,6 +23,8 @@ Application::Application(int width, int height) : WIDTH(width), HEIGHT(height), 
 
     glfwMakeContextCurrent(m_window);
 
+    // Query actual framebuffer size in pixels to handle high-DPI/retina/Wayland scaling correctly
+    glfwGetFramebufferSize(m_window, &WIDTH, &HEIGHT);
 
     // openAL SETUP
     device = alcOpenDevice(nullptr);
@@ -46,7 +48,7 @@ Application::Application(int width, int height) : WIDTH(width), HEIGHT(height), 
 
     // glfw callbacks
     glfwSetWindowUserPointer(m_window, this);
-    glfwSetWindowSizeCallback(m_window, Application::onResizeCallback);
+    glfwSetFramebufferSizeCallback(m_window, Application::onResizeCallback);
     glfwSetKeyCallback(m_window, Application::onKeyCallback);
 
     setupProjectionMatrix();

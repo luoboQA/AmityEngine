@@ -40,7 +40,7 @@ add_library(AmityCore STATIC
 
 # Core Include Directories
 target_include_directories(AmityCore PUBLIC src/core)
-target_include_directories(AmityCore PRIVATE ${PROJECT_SOURCE_DIR}/src/third_party/stb)
+target_include_directories(AmityCore PUBLIC ${PROJECT_SOURCE_DIR}/src/third_party/stb)
 
 # Core Link Libraries (Inherited transitively by downstream targets)
 target_link_libraries(AmityCore PUBLIC
