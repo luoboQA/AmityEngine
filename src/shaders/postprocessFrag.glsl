@@ -7,7 +7,7 @@ uniform sampler2D screenTexture;
 uniform sampler2D depthTexture;
 uniform float time;
 uniform vec2 iResolution;
-uniform vec3 lookVector;
+uniform mat3 camRotation;
 uniform float FOV;
 
 float VIGNETTE_AMOUNT = 0.4;
@@ -148,7 +148,9 @@ vec4 render_clouds(ray_t eye) {
     const int steps = cld_march_steps;
     const float march_step = cld_thick / float(steps);
 
-    vec3 projection = eye.direction / eye.direction.y;
+    float eyeY = eye.direction.y;
+    if (abs(eyeY) < 0.0001) eyeY = 0.0001 * (eyeY < 0.0 ? -1.0 : 1.0);
+    vec3 projection = eye.direction / eyeY;
     vec3 iter = projection * march_step;
 
     float cutoff = dot(eye.direction, vec3(0.0, 1.0, 0.0));
@@ -173,16 +175,22 @@ vec4 render_clouds(ray_t eye) {
 
 vec3 render_sky(ray_t eye_ray) {
     vec3 sky = vec3(0.0, 0.0, 0.0);
+    // Early-out if the ray points horizontally or downwards to prevent division-by-zero NaN glitches
+    if (eye_ray.direction.y < 0.01) {
+        return sky;
+    }
     vec4 cld = render_clouds(eye_ray);
     return mix(sky, cld.rgb, cld.a);
 }
 
-ray_t get_primary_ray(vec3 cam_local_point, vec3 cam_origin, vec3 cam_look_at) {
-    vec3 fwd = normalize(cam_look_at - cam_origin);
-    vec3 up = vec3(0.0, 1.0, 0.0);
-    vec3 right = cross(fwd, up);
-    up = cross(right, fwd);
-    return ray_t(cam_origin, normalize(fwd + up * cam_local_point.y + right * cam_local_point.x));
+ray_t get_primary_ray(vec3 cam_local_point, vec3 cam_origin) {
+    // Manually extract orthonormal columns to be 100% immune to matrix layout transposition bugs
+    vec3 camRight = camRotation[0];
+    vec3 camUp    = camRotation[1];
+    vec3 camBack  = camRotation[2]; // rot[2] is the back vector in camera space
+    
+    vec3 dir = normalize(camRight * cam_local_point.x + camUp * cam_local_point.y - camBack);
+    return ray_t(cam_origin, dir);
 }
 
 void main()
@@ -197,7 +205,7 @@ void main()
         vec3 eye = vec3(0.0, 0.0, 0.0);
         
         vec3 point_cam = vec3((2.0 * TexCoords - 1.0) * aspect_ratio * FOV, -1.0);
-        ray_t ray = get_primary_ray(point_cam, eye, lookVector);
+        ray_t ray = get_primary_ray(point_cam, eye);
         
         vec3 skyColor = render_sky(ray) * cld_brightness;
         

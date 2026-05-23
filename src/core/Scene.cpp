@@ -123,17 +123,17 @@ void Scene::render(double dt)
     m_postProcessShader.setVec2("iResolution", glm::vec2(m_fboWidth, m_fboHeight));
 
     // Get camera variables
-    glm::vec3 lookVector{0.0f, 0.0f, -1.0f};
+    glm::mat3 camRotation{1.0f};
     float fov = 90.0f;
     if (m_cameraEntity)
     {
         if (auto cameraComp = m_cameraEntity->getComponent<CameraComponent>())
         {
-            lookVector = cameraComp->forwardVector();
+            camRotation = m_cameraEntity->getRotation();
             fov = cameraComp->getFov();
         }
     }
-    m_postProcessShader.setVec3("lookVector", lookVector);
+    m_postProcessShader.setMat3("camRotation", camRotation);
     m_postProcessShader.setFloat("FOV", glm::tan(glm::radians(fov / 2.0f))); // FOV scaling for ray projection
 
     glBindVertexArray(m_quadVAO);
