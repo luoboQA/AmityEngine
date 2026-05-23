@@ -1,6 +1,8 @@
 build/
 .vscode/
 
+ai_guidelines.md
+
 LowPolyAssets/
 soundAssets/
 *.log

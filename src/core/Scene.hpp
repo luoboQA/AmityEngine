@@ -52,7 +52,7 @@ private:
 
     GLuint m_fbo{0};
     GLuint m_colorTexture{0};
-    GLuint m_depthBuffer{0};
+    GLuint m_depthTexture{0};
     int m_fboWidth{800};
     int m_fboHeight{600}; 
 };

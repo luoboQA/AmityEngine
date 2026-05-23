@@ -35,7 +35,7 @@ Scene::~Scene()
     if (glfwGetCurrentContext()) { // if using GLFW
         if (m_fbo != 0) glDeleteFramebuffers(1, &m_fbo);
         if (m_colorTexture != 0) glDeleteTextures(1, &m_colorTexture);
-        if (m_depthBuffer != 0) glDeleteRenderbuffers(1, &m_depthBuffer);
+        if (m_depthTexture != 0) glDeleteTextures(1, &m_depthTexture);
         if (m_quadVAO != 0) glDeleteVertexArrays(1, &m_quadVAO);
         if (m_quadVBO != 0) glDeleteBuffers(1, &m_quadVBO);
     }
@@ -47,7 +47,7 @@ void Scene::setupFramebuffer()
     // Clean up old FBO resources before allocating new ones (prevent resizing leaks!)
     if (m_fbo != 0) glDeleteFramebuffers(1, &m_fbo);
     if (m_colorTexture != 0) glDeleteTextures(1, &m_colorTexture);
-    if (m_depthBuffer != 0) glDeleteRenderbuffers(1, &m_depthBuffer);
+    if (m_depthTexture != 0) glDeleteTextures(1, &m_depthTexture);
 
     glGenFramebuffers(1, &m_fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
@@ -60,11 +60,15 @@ void Scene::setupFramebuffer()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_colorTexture, 0);
 
-    // Create depth buffer
-    glGenRenderbuffers(1, &m_depthBuffer);
-    glBindRenderbuffer(GL_RENDERBUFFER, m_depthBuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, m_fboWidth, m_fboHeight);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_depthBuffer);
+    // Create depth buffer as texture to allow sampling
+    glGenTextures(1, &m_depthTexture);
+    glBindTexture(GL_TEXTURE_2D, m_depthTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, m_fboWidth, m_fboHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_depthTexture, 0);
 
     // Check framebuffer completeness
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -114,9 +118,32 @@ void Scene::render(double dt)
 
     m_postProcessShader.use();
     m_postProcessShader.setInt("screenTexture", 0);
+    m_postProcessShader.setInt("depthTexture", 1);
+    m_postProcessShader.setFloat("time", (float)glfwGetTime());
+    m_postProcessShader.setVec2("iResolution", glm::vec2(m_fboWidth, m_fboHeight));
+
+    // Get camera variables
+    glm::vec3 lookVector{0.0f, 0.0f, -1.0f};
+    float fov = 90.0f;
+    if (m_cameraEntity)
+    {
+        if (auto cameraComp = m_cameraEntity->getComponent<CameraComponent>())
+        {
+            lookVector = cameraComp->forwardVector();
+            fov = cameraComp->getFov();
+        }
+    }
+    m_postProcessShader.setVec3("lookVector", lookVector);
+    m_postProcessShader.setFloat("FOV", glm::tan(glm::radians(fov / 2.0f))); // FOV scaling for ray projection
+
     glBindVertexArray(m_quadVAO);
+    
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_colorTexture);
+    
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, m_depthTexture);
+    
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
