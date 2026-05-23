@@ -38,6 +38,7 @@ public:
     void setPostProcessShader(const std::string& vertPath, const std::string& fragPath);
     const std::string& getPostProcessVertPath() const { return m_postProcessVertPath; }
     const std::string& getPostProcessFragPath() const { return m_postProcessFragPath; }
+    Shader& getPostProcessShader() { return m_postProcessShader; }
 
 private:
     std::vector<std::shared_ptr<Renderable>> m_renderables;

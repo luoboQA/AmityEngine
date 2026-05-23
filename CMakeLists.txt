@@ -127,8 +127,23 @@ add_custom_command(
     TARGET CanyonSiege POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${CMAKE_SOURCE_DIR}/src/shaders"
-            "$<TARGET_FILE_DIR:CanyonSiege>/shaders"
-    COMMENT "copy shaders to CanyonSiege build dir"
+)
+
+# Shadows of Amity Labyrinth horror game target (AmityLabyrinth)
+add_executable(AmityLabyrinth
+    src/games/AmityLabyrinth/main.cpp
+    src/games/AmityLabyrinth/LabyrinthGame.cpp
+)
+target_link_libraries(AmityLabyrinth PRIVATE AmityCore)
+target_include_directories(AmityLabyrinth PRIVATE src/games/AmityLabyrinth)
+
+# Post-Build Custom Command to copy shaders next to the AmityLabyrinth executable
+add_custom_command(
+    TARGET AmityLabyrinth POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${CMAKE_SOURCE_DIR}/src/shaders"
+            "$<TARGET_FILE_DIR:AmityLabyrinth>/shaders"
+    COMMENT "copy shaders to AmityLabyrinth build dir"
 )
 
 # build Private Games
