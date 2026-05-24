@@ -28,6 +28,8 @@ public:
 
     glm::vec4 getMaterialColor() const { return materialColor; }
     const std::vector<Texture>& getTextures() const { return textures; }
+    const std::vector<Vertex>& getVertices() const { return vertices; }
+    const std::vector<unsigned int>& getIndices() const { return indices; }
 
 private:
     std::vector<Vertex> vertices;
@@ -51,7 +53,7 @@ class ModelRenderable : public Renderable
 public:
     ModelRenderable(const ModelConfig& modelConfig, std::shared_ptr<Shader> shader);
     void render(const Scene& scene, double dt) override;
-
+    const std::vector<std::unique_ptr<Mesh>>& getMeshes() const { return meshes; }
 
 private:
     std::vector<std::unique_ptr<Mesh>> meshes;
