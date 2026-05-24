@@ -1,7 +1,7 @@
 build/
 .vscode/
-
-ai_guidelines.md
+# Ignore all AI guidance and verification markdown files
+ai_*.md
 
 LowPolyAssets/
 soundAssets/

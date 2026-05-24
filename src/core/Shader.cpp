@@ -53,9 +53,14 @@ void Shader::setShader(const char* vertexPath, const char* fragmentPath) {
 		std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ at " << vertexPath << " or " << fragmentPath << std::endl;
 	}
 
+	// Prevent segmentation faults in headless environments (like unit tests running without an OpenGL context)
+	if (glCreateShader == nullptr) {
+		std::cout << "[SHADER] Headless environment detected. Skipping GPU compilation for: " << vertexPath << " and " << fragmentPath << std::endl;
+		return;
+	}
+
 	const char* vShaderCode = vertexCode.c_str();
 	const char* fShaderCode = fragmentCode.c_str();
-
 
 	//next, compile shaders
 	unsigned int vertex, fragment;
