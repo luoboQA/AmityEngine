@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <memory>
+#include <string>
 #include <typeindex>
 #include <unordered_map>
 #include <glm/glm.hpp>
@@ -27,6 +28,9 @@ public:
 
     glm::vec3 getScale() const { return m_scale; }
     void setScale(glm::vec3 scale) { m_scale = scale; }
+
+    std::string getName() const { return m_name; }
+    void setName(const std::string& name) { m_name = name; }
 
     // Component management
     template<typename T, typename... Args>
@@ -66,6 +70,7 @@ private:
 
     std::vector<std::shared_ptr<Component>> m_components;
     std::unordered_map<std::type_index, std::shared_ptr<Component>> m_componentMap;
+    std::string m_name;
 };
 
 } // namespace Core

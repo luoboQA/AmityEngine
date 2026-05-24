@@ -3,6 +3,7 @@
 #include <factory/CameraFactory.hpp>
 #include "ResourceManager.hpp"
 #include "WaterRenderable.hpp"
+#include "scripting/LuaScriptService.hpp"
 
 using namespace Core;
 
@@ -35,6 +36,7 @@ void TestGame::init()
 
     // pirate ship
     m_pirateShip = EntityFactory::CreatePirateShip(shader);
+    m_pirateShip->setName("pirateShip");
     m_pirateShip->setPosition(glm::vec3(-30.0f, -30.0f, 500.0f));
     m_scene.addEntity(m_pirateShip);
 
@@ -54,6 +56,10 @@ void TestGame::init()
     getUserInputService().InputBegan.Connect([this](KeyCode keycode){
         std::cout << "KEY PRESSED:" << static_cast<int>(keycode) << std::endl;
     });
+
+    // Initialize and run Lua scripting
+    LuaScriptService::GetInstance().init(&m_scene, &getUserInputService());
+    LuaScriptService::GetInstance().executeFile("src/app/script.lua");
 
     // water renderable
     auto waterShader = ResourceManager::GetShader("WaterShader", "src/shaders/waterVert.glsl", "src/shaders/waterFrag.glsl");

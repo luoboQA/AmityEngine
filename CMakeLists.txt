@@ -24,6 +24,9 @@ find_package(LibSndFile REQUIRED)
 add_library(glad STATIC src/third_party/glad/glad.c)
 target_include_directories(glad PUBLIC src/third_party/glad/include)
 
+# Lua Dependency Configuration (Statically compiled from official source)
+include(cmake/Lua.cmake)
+
 # Core Engine Static Library
 add_library(AmityCore STATIC
     src/core/Application.cpp
@@ -37,11 +40,13 @@ add_library(AmityCore STATIC
     src/core/UIRenderer.cpp
     src/core/user_input/UserInputService.cpp
     src/core/WaterRenderable.cpp
+    src/core/scripting/LuaScriptService.cpp
 )
 
 # Core Include Directories
 target_include_directories(AmityCore PUBLIC src/core)
 target_include_directories(AmityCore PUBLIC ${PROJECT_SOURCE_DIR}/src/third_party/stb)
+target_include_directories(AmityCore PUBLIC "${lua_SOURCE_DIR}/src")
 
 # Core Link Libraries (Inherited transitively by downstream targets)
 target_link_libraries(AmityCore PUBLIC
@@ -51,6 +56,7 @@ target_link_libraries(AmityCore PUBLIC
     glm::glm
     assimp::assimp
     ${LIBSNDFILE_LIBRARIES}
+    lua
 )
 
 # OpenAL Linking logic (Modern vs Legacy fallback)
@@ -68,13 +74,16 @@ add_executable(Amity
 )
 target_link_libraries(Amity PRIVATE AmityCore)
 
-# Post-Build Custom Command to copy shaders next to the executable
+# Post-Build Custom Command to copy shaders and scripts next to the executable
 add_custom_command(
     TARGET Amity POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${CMAKE_SOURCE_DIR}/src/shaders"
             "$<TARGET_FILE_DIR:Amity>/shaders"
-    COMMENT "copy shaders to build dir"
+    COMMAND ${CMAKE_COMMAND} -E copy
+            "${CMAKE_SOURCE_DIR}/src/app/script.lua"
+            "$<TARGET_FILE_DIR:Amity>/script.lua"
+    COMMENT "copy shaders and scripts to build dir"
 )
 
 
