@@ -1,5 +1,6 @@
 #include "Application.hpp"
 #include "UIRenderer.hpp"
+#include "ResourceManager.hpp"
 
 namespace Core {
 
@@ -57,6 +58,12 @@ Application::Application(int width, int height) : WIDTH(width), HEIGHT(height), 
 
 Application::~Application()
 {
+    // clean up ResourceManager while opengl context is alive
+    ResourceManager::Clear();
+
+    // clean up Scene while opengl context is still alive
+    m_scene.clear();
+
     UIRenderer::Shutdown();
     // cleanup
     glfwDestroyWindow(m_window);

@@ -246,4 +246,23 @@ void Scene::setPostProcessShader(const std::string& vertPath, const std::string&
     }
 }
 
+void Scene::clear()
+{
+    // Explicitly release post-process shader and framebuffer resources while the OpenGL context is alive
+    if (m_postProcessShader.ID != 0)
+    {
+        glDeleteProgram(m_postProcessShader.ID);
+        m_postProcessShader.ID = 0;
+    }
+    if (m_fbo != 0) { glDeleteFramebuffers(1, &m_fbo); m_fbo = 0; }
+    if (m_colorTexture != 0) { glDeleteTextures(1, &m_colorTexture); m_colorTexture = 0; }
+    if (m_depthTexture != 0) { glDeleteTextures(1, &m_depthTexture); m_depthTexture = 0; }
+    if (m_quadVAO != 0) { glDeleteVertexArrays(1, &m_quadVAO); m_quadVAO = 0; }
+    if (m_quadVBO != 0) { glDeleteBuffers(1, &m_quadVBO); m_quadVBO = 0; }
+
+    m_renderables.clear();
+    m_entities.clear();
+    m_entitiesToRemove.clear();
+}
+
 }
