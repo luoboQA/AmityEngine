@@ -27,6 +27,7 @@ public:
     void draw();
 
     glm::vec4 getMaterialColor() const { return materialColor; }
+    const std::vector<Texture>& getTextures() const { return textures; }
 
 private:
     std::vector<Vertex> vertices;

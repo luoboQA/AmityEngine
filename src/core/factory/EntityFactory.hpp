@@ -51,6 +51,19 @@ public:
 
         return drone;
     }
+
+    static std::shared_ptr<Entity> CreatePirateShip(std::shared_ptr<Shader> shader)
+    {
+        auto pirateShip = std::make_shared<Entity>();
+
+        auto model = ResourceManager::GetModel("/home/walker/Downloads/pirate-ship-rigged/source/ship_pinnace_1k.fbx", 10.0f, 2.2f, shader);
+        pirateShip->addComponent<MeshComponent>(model, shader);
+
+        // rigidbody
+        auto physics = pirateShip->addComponent<RigidBodyComponent>();
+
+        return pirateShip;
+    }
 };
 
 } // namespace Core

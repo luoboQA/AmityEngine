@@ -33,6 +33,10 @@ void TestGame::init()
     auto droneEntity = EntityFactory::CreateDrone(shader);
     m_scene.addEntity(droneEntity);
 
+    // pirate ship
+    auto pirateShip = EntityFactory::CreatePirateShip(shader);
+    m_scene.addEntity(pirateShip);
+
     // custom pan/tilt camera
     auto panTiltCamera = CameraFactory::CreatePanTiltCamera();
     m_scene.setCameraEntity(panTiltCamera);
