@@ -56,7 +56,7 @@ public:
     {
         auto pirateShip = std::make_shared<Entity>();
 
-        auto model = ResourceManager::GetModel("/home/walker/Downloads/pirate-ship-rigged/source/ship_pinnace_1k.fbx", 10.0f, 2.2f, shader);
+        auto model = ResourceManager::GetModel("/home/walker/Downloads/pirate-ship-rigged/source/ship_pinnace_1k.fbx", 10.0f, 0.6f, shader);
         auto meshComp = pirateShip->addComponent<MeshComponent>(model, shader);
 
         // pirate ship local transformations

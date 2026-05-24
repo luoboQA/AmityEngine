@@ -158,6 +158,25 @@ add_custom_command(
     COMMENT "copy shaders to AmityLabyrinth build dir"
 )
 
+# Stormy Sails Sailing Game target (StormySails)
+add_executable(StormySails
+    src/games/StormySails/main.cpp
+    src/games/StormySails/StormySailsGame.cpp
+)
+target_link_libraries(StormySails PRIVATE AmityCore)
+target_include_directories(StormySails PRIVATE src/games/StormySails)
+target_include_directories(StormySails PRIVATE src/third_party/stb)
+
+# Post-Build Custom Command to copy shaders next to the StormySails executable
+add_custom_command(
+    TARGET StormySails POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${CMAKE_SOURCE_DIR}/src/shaders"
+            "$<TARGET_FILE_DIR:StormySails>/shaders"
+    COMMENT "copy shaders to StormySails build dir"
+)
+
+
 # build Private Games
 if(EXISTS "${CMAKE_SOURCE_DIR}/src/games/PrivateGames/CMakeLists.txt")
     add_subdirectory(src/games/PrivateGames)
