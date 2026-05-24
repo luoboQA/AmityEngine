@@ -13,5 +13,8 @@ public:
 
 private:
     Sound m_music;
+    
+    // pirate ship
+    std::shared_ptr<Entity> m_pirateShip;
 
 };

@@ -34,8 +34,9 @@ void TestGame::init()
     m_scene.addEntity(droneEntity);
 
     // pirate ship
-    auto pirateShip = EntityFactory::CreatePirateShip(shader);
-    m_scene.addEntity(pirateShip);
+    m_pirateShip = EntityFactory::CreatePirateShip(shader);
+    m_pirateShip->setPosition(glm::vec3(-30.0f, -30.0f, 500.0f));
+    m_scene.addEntity(m_pirateShip);
 
     // custom pan/tilt camera
     auto panTiltCamera = CameraFactory::CreatePanTiltCamera();
@@ -78,5 +79,21 @@ void TestGame::update(double dt)
         pos.z = glm::cos(static_cast<float>(m_runTime) * circle_speed) * circle_distance;
         cam->setPosition(pos);
         cam->lookAt(glm::vec3{0.0f});
+    }
+
+    // sine wave pirate ship
+    if (m_pirateShip)
+    {
+        // pirate ship slight noise rotaiton
+        float yaw = 0.0f;
+        float pitch = 0.05f * glm::sin(m_runTime * 0.7f); // Natural nose pitch bobbing
+        float roll = 0.05f * glm::cos(m_runTime * 1.0f);  // Natural side-to-side roll swaying
+        
+        m_pirateShip->setRotation(glm::mat3(glm::eulerAngleYXZ(yaw, pitch, roll)));
+
+        // bob up and down
+        glm::vec3 pos = m_pirateShip->getPosition();
+        pos.y = -35.0f + 1.2f * glm::sin(m_runTime * 1.0f);
+        m_pirateShip->setPosition(pos);
     }
 }

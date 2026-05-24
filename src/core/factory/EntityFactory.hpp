@@ -57,10 +57,16 @@ public:
         auto pirateShip = std::make_shared<Entity>();
 
         auto model = ResourceManager::GetModel("/home/walker/Downloads/pirate-ship-rigged/source/ship_pinnace_1k.fbx", 10.0f, 2.2f, shader);
-        pirateShip->addComponent<MeshComponent>(model, shader);
+        auto meshComp = pirateShip->addComponent<MeshComponent>(model, shader);
+
+        // pirate ship local transformations
+        glm::mat4 xRot = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        glm::mat4 zRot = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+        meshComp->setLocalRotation(xRot * zRot);
 
         // rigidbody
         auto physics = pirateShip->addComponent<RigidBodyComponent>();
+        physics->setVelocity(glm::vec3(0.0f, 0.0f, -100.0f));
 
         return pirateShip;
     }
