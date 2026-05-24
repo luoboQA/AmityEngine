@@ -2,6 +2,7 @@
 #include <factory/EntityFactory.hpp>
 #include <factory/CameraFactory.hpp>
 #include "ResourceManager.hpp"
+#include "WaterRenderable.hpp"
 
 using namespace Core;
 
@@ -48,6 +49,16 @@ void TestGame::init()
     getUserInputService().InputBegan.Connect([this](KeyCode keycode){
         std::cout << "KEY PRESSED:" << static_cast<int>(keycode) << std::endl;
     });
+
+    // water renderable
+    auto waterShader = ResourceManager::GetShader("WaterShader", "src/shaders/waterVert.glsl", "src/shaders/waterFrag.glsl");
+    WaterSettings waterSettings;
+    waterSettings.WaterHeight = -10.0f; // Positioned flat at Y = -10.0f under the models
+    waterSettings.WaterDepth = 25.0f;   // Depth / height of wave displacement
+    waterSettings.WaterSpeed = 0.2f;
+    waterSettings.WaterSpread = 0.05f;
+    auto water = std::make_shared<WaterRenderable>(waterSettings, waterShader);
+    m_scene.addRenderable(water);
 }
 
 void TestGame::update(double dt)

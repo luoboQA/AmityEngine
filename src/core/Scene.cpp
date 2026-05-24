@@ -93,19 +93,19 @@ void Scene::render(double dt)
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // render renderables (if not in entity, probably just a static render (like terrain player doesnt interact with))
-    for (const auto& renderable : m_renderables)
-    {
-        renderable->render(*this, dt);
-    }
-
-    // entities
+    // Render entities first
     for (const auto& entity : m_entities)
     {
         if (auto meshComp = entity->getComponent<MeshComponent>())
         {
             meshComp->draw(*this, dt);
         }
+    }
+
+    // Finally do other renderables
+    for (const auto& renderable : m_renderables)
+    {
+        renderable->render(*this, dt);
     }
 
 
@@ -119,7 +119,7 @@ void Scene::render(double dt)
     m_postProcessShader.use();
     m_postProcessShader.setInt("screenTexture", 0);
     m_postProcessShader.setInt("depthTexture", 1);
-    m_postProcessShader.setFloat("time", (float)glfwGetTime());
+    m_postProcessShader.setFloat("time", static_cast<float>(m_time));
     m_postProcessShader.setVec2("iResolution", glm::vec2(m_fboWidth, m_fboHeight));
 
     // Get camera variables
@@ -190,6 +190,8 @@ glm::mat4 Scene::getProjection() const
 
 void Scene::update(double dt)
 {
+    m_time += dt;
+
     // update logic
     glm::vec3 forwardVec{0.0f, 0.0f, -1.0f};
     glm::vec3 pos{0.0f};

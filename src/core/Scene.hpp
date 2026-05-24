@@ -28,6 +28,10 @@ public:
     void setCameraEntity(std::shared_ptr<Entity> camera);
     glm::mat4 getView() const;
     glm::mat4 getProjection() const;
+    int getFBOWidth() const { return m_fboWidth; }
+    int getFBOHeight() const { return m_fboHeight; }
+    double getTime() const { return m_time; }
+    GLuint getDepthTexture() const { return m_depthTexture; }
 
     void addRenderable(std::shared_ptr<Renderable> renderable) { m_renderables.push_back(renderable); }
     void addEntity(std::shared_ptr<Entity> entity) { m_entities.push_back(entity); }
@@ -61,6 +65,7 @@ private:
     GLuint m_depthTexture{0};
     int m_fboWidth{800};
     int m_fboHeight{600}; 
+    double m_time{0.0};
 };
 
 }

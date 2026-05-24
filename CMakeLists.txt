@@ -36,6 +36,7 @@ add_library(AmityCore STATIC
     src/core/FontManager.cpp
     src/core/UIRenderer.cpp
     src/core/user_input/UserInputService.cpp
+    src/core/WaterRenderable.cpp
 )
 
 # Core Include Directories
@@ -127,6 +128,8 @@ add_custom_command(
     TARGET CanyonSiege POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${CMAKE_SOURCE_DIR}/src/shaders"
+            "$<TARGET_FILE_DIR:CanyonSiege>/shaders"
+    COMMENT "copy shaders to CanyonSiege build dir"
 )
 
 # Shadows of Amity Labyrinth horror game target (AmityLabyrinth)

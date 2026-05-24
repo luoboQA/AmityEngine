@@ -1,6 +1,7 @@
 #include "CraftMinerGame.hpp"
 #include "CameraComponent.hpp"
 #include "UIRenderer.hpp"
+#include "WaterRenderable.hpp"
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <cmath>
@@ -42,6 +43,17 @@ void CraftMinerGame::init()
     // 2. Instantiate VoxelWorld
     m_world = std::make_shared<VoxelWorld>(m_voxelShader);
     m_scene.addRenderable(m_world);
+
+    // 2b. Add Infinite Water Renderable (Sea Level flat at Y = 7.5f)
+    auto waterShader = std::make_shared<Core::Shader>();
+    waterShader->setShader("src/shaders/waterVert.glsl", "src/shaders/waterFrag.glsl");
+    Core::WaterSettings waterSettings;
+    waterSettings.WaterHeight = 7.5f; // Positioned flat at sea level below sandy beaches
+    waterSettings.WaterDepth = 4.0f;   // Depth / wave height displacement scale
+    waterSettings.WaterSpeed = 0.2f;
+    waterSettings.WaterSpread = 0.1f;
+    auto water = std::make_shared<Core::WaterRenderable>(waterSettings, waterShader);
+    m_scene.addRenderable(water);
 
     // 3. Setup Scene Camera Entity
     m_cameraEntity = std::make_shared<Core::Entity>();
