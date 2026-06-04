@@ -23,7 +23,8 @@ private:
     float m_elevation {0.0f}; // DEGREES
 
     glm::mat3 getRotMat() {
-        return glm::mat3(glm::yawPitchRoll(glm::radians(m_azimuth), glm::radians(m_elevation), 0.0f));
+        // yaw is inverted because positive azimuth -> clockwise (openGL up = counter-clockwise). 
+        return glm::mat3(glm::yawPitchRoll(-glm::radians(m_azimuth), glm::radians(m_elevation), 0.0f));
     }
 
     void updateOwner() {

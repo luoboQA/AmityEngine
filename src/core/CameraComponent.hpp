@@ -9,7 +9,7 @@ namespace Core {
 class CameraComponent : public Component
 {
 public:
-    CameraComponent(float fov = 90.0f, float aspect = 16.0f / 9.0f, float nearPlane = 0.1f, float farPlane = 5000.0f)
+    CameraComponent(float fov = 90.0f, float aspect = 16.0f / 9.0f, float nearPlane = 0.1f, float farPlane = 50000.0f)
         : m_fov(fov), m_aspect(aspect), m_near(nearPlane), m_far(farPlane) {}
 
     glm::mat4 getViewMatrix() const
