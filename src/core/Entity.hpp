@@ -72,5 +72,6 @@ private:
     std::unordered_map<std::type_index, std::shared_ptr<Component>> m_componentMap;
     std::string m_name;
 };
+using EntityPtr = std::shared_ptr<Entity>;
 
 } // namespace Core
