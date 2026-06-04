@@ -24,8 +24,11 @@ add_executable(AmityTests
     TestPhysics.cpp
     TestEvent.cpp
     TestResourceManager.cpp
-    TestScripting.cpp
 )
+
+if(AMITY_ENABLE_LUA)
+    target_sources(AmityTests PRIVATE TestScripting.cpp)
+endif()
 
 # Link tests to the Core engine and GoogleTest libraries
 target_link_libraries(AmityTests PRIVATE

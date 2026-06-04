@@ -3,8 +3,9 @@
 #include <factory/CameraFactory.hpp>
 #include "ResourceManager.hpp"
 #include "WaterRenderable.hpp"
+#ifdef AMITY_HAS_LUA
 #include "scripting/LuaScriptService.hpp"
-
+#endif
 using namespace Core;
 
 TestGame::TestGame() : Application(1280, 720), m_music("soundAssets/ItWontStopRainingHere.ogg")
@@ -58,8 +59,10 @@ void TestGame::init()
     });
 
     // Initialize and run Lua scripting
+    #ifdef AMITY_HAS_LUA
     LuaScriptService::GetInstance().init(&m_scene, &getUserInputService());
     LuaScriptService::GetInstance().executeFile("src/app/script.lua");
+    #endif
 
     // water renderable
     auto waterShader = ResourceManager::GetShader("WaterShader", "src/shaders/waterVert.glsl", "src/shaders/waterFrag.glsl");
