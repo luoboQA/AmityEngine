@@ -80,7 +80,7 @@ target_link_libraries(Amity PRIVATE AmityCore)
 add_custom_command(
     TARGET Amity POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${CMAKE_SOURCE_DIR}/src/shaders"
+            "${CMAKE_CURRENT_SOURCE_DIR}/src/shaders"
             "$<TARGET_FILE_DIR:Amity>/shaders"
     COMMENT "copy shaders and scripts to build dir"
 )
@@ -95,7 +95,7 @@ if(AMITY_ENABLE_LUA)
     add_custom_command(
         TARGET Amity POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
-                "${CMAKE_SOURCE_DIR}/src/app/script.lua"
+                "${CMAKE_CURRENT_SOURCE_DIR}/src/app/script.lua"
                 "$<TARGET_FILE_DIR:Amity>/script.lua"
         COMMENT "copy lua script to build dir"
     )
@@ -117,7 +117,7 @@ target_include_directories(AmityCraft PRIVATE src/games/AmityCraft)
 add_custom_command(
     TARGET AmityCraft POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${CMAKE_SOURCE_DIR}/src/shaders"
+            "${CMAKE_CURRENT_SOURCE_DIR}/src/shaders"
             "$<TARGET_FILE_DIR:AmityCraft>/shaders"
     COMMENT "copy shaders to AmityCraft build dir"
 )
@@ -134,7 +134,7 @@ target_include_directories(PanTiltShowcase PRIVATE src/games/PanTiltShowcase)
 add_custom_command(
     TARGET PanTiltShowcase POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${CMAKE_SOURCE_DIR}/src/shaders"
+            "${CMAKE_CURRENT_SOURCE_DIR}/src/shaders"
             "$<TARGET_FILE_DIR:PanTiltShowcase>/shaders"
     COMMENT "copy shaders to PanTiltShowcase build dir"
 )
@@ -152,7 +152,7 @@ target_include_directories(CanyonSiege PRIVATE src/third_party/stb)
 add_custom_command(
     TARGET CanyonSiege POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${CMAKE_SOURCE_DIR}/src/shaders"
+            "${CMAKE_CURRENT_SOURCE_DIR}/src/shaders"
             "$<TARGET_FILE_DIR:CanyonSiege>/shaders"
     COMMENT "copy shaders to CanyonSiege build dir"
 )
@@ -169,7 +169,7 @@ target_include_directories(AmityLabyrinth PRIVATE src/games/AmityLabyrinth)
 add_custom_command(
     TARGET AmityLabyrinth POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${CMAKE_SOURCE_DIR}/src/shaders"
+            "${CMAKE_CURRENT_SOURCE_DIR}/src/shaders"
             "$<TARGET_FILE_DIR:AmityLabyrinth>/shaders"
     COMMENT "copy shaders to AmityLabyrinth build dir"
 )
@@ -187,14 +187,14 @@ target_include_directories(StormySails PRIVATE src/third_party/stb)
 add_custom_command(
     TARGET StormySails POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${CMAKE_SOURCE_DIR}/src/shaders"
+            "${CMAKE_CURRENT_SOURCE_DIR}/src/shaders"
             "$<TARGET_FILE_DIR:StormySails>/shaders"
     COMMENT "copy shaders to StormySails build dir"
 )
 
 
 # build Private Games
-if(EXISTS "${CMAKE_SOURCE_DIR}/src/games/PrivateGames/CMakeLists.txt")
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/games/PrivateGames/CMakeLists.txt")
     add_subdirectory(src/games/PrivateGames)
 endif()
 
