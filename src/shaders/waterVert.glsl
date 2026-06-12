@@ -1,4 +1,4 @@
-#version 460 core
+#version 420 core
 layout(location = 0) in vec2 aPos;       // Position in screen space [-1, 1]
 layout(location = 1) in vec2 aTexCoord;  // Texture coordinates [0, 1]
 

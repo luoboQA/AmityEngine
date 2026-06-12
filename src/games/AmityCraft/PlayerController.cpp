@@ -72,7 +72,7 @@ void PlayerController::handleMouseInput(double dt)
     m_lastMouseX = xpos;
     m_lastMouseY = ypos;
 
-    float sensitivity = 0.15f;
+    float sensitivity = 0.05f;
     xoffset *= sensitivity;
     yoffset *= sensitivity;
 

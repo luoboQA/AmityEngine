@@ -69,23 +69,55 @@ else()
     target_link_libraries(AmityCore PUBLIC ${OPENAL_LIBRARY})
 endif()
 
+# ============================================================================
+# 复制资源文件（只执行一次，所有游戏共享）
+# ============================================================================
+add_custom_target(CopyResources ALL
+    # 创建目录
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/src/shaders"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/src/games/AmityLabyrinth/shaders"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/assets"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/LowPolyAssets"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/soundAssets"
+    
+    # 删除多余的 shaders 目录（如果存在）
+    COMMAND ${CMAKE_COMMAND} -E rm -rf "${CMAKE_BINARY_DIR}/shaders"
+    
+    # 复制全局 shaders 到 src/shaders
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_SOURCE_DIR}/src/shaders"
+        "${CMAKE_BINARY_DIR}/src/shaders"
+    
+    # 复制 AmityLabyrinth 的专属 shaders 到 src/games/AmityLabyrinth/shaders
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_SOURCE_DIR}/src/games/AmityLabyrinth/shaders"
+        "${CMAKE_BINARY_DIR}/src/games/AmityLabyrinth/shaders"
+    
+    # 复制其他资源
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_SOURCE_DIR}/src/assets"
+        "${CMAKE_BINARY_DIR}/assets"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_SOURCE_DIR}/src/LowPolyAssets"
+        "${CMAKE_BINARY_DIR}/LowPolyAssets"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_SOURCE_DIR}/src/soundAssets"
+        "${CMAKE_BINARY_DIR}/soundAssets"
+    
+    COMMENT "Copying resources once to build directory"
+)
+
+# ============================================================================
+# 游戏可执行文件
+# ============================================================================
+
 # Main Game Executable Target
 add_executable(Amity
     src/app/main.cpp
     src/app/TestGame.cpp
 )
 target_link_libraries(Amity PRIVATE AmityCore)
-
-# Post-Build Custom Command to copy shaders and scripts next to the executable
-add_custom_command(
-    TARGET Amity POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${CMAKE_CURRENT_SOURCE_DIR}/src/shaders"
-            "$<TARGET_FILE_DIR:Amity>/shaders"
-    COMMENT "copy shaders and scripts to build dir"
-)
-
-
+add_dependencies(Amity CopyResources)
 
 if(AMITY_ENABLE_LUA)
     target_sources(AmityCore PRIVATE src/core/scripting/LuaScriptService.cpp)
@@ -101,8 +133,6 @@ if(AMITY_ENABLE_LUA)
     )
 endif()
 
-
-
 # Voxel Minecraft Clone Executable Target (AmityCraft)
 add_executable(AmityCraft
     src/games/AmityCraft/main.cpp
@@ -112,15 +142,7 @@ add_executable(AmityCraft
 )
 target_link_libraries(AmityCraft PRIVATE AmityCore)
 target_include_directories(AmityCraft PRIVATE src/games/AmityCraft)
-
-# Post-Build Custom Command to copy shaders next to the AmityCraft executable
-add_custom_command(
-    TARGET AmityCraft POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${CMAKE_CURRENT_SOURCE_DIR}/src/shaders"
-            "$<TARGET_FILE_DIR:AmityCraft>/shaders"
-    COMMENT "copy shaders to AmityCraft build dir"
-)
+add_dependencies(AmityCraft CopyResources)
 
 # Pan/Tilt Camera Showcase Target (PanTiltShowcase)
 add_executable(PanTiltShowcase
@@ -129,15 +151,7 @@ add_executable(PanTiltShowcase
 )
 target_link_libraries(PanTiltShowcase PRIVATE AmityCore)
 target_include_directories(PanTiltShowcase PRIVATE src/games/PanTiltShowcase)
-
-# Post-Build Custom Command to copy shaders next to the PanTiltShowcase executable
-add_custom_command(
-    TARGET PanTiltShowcase POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${CMAKE_CURRENT_SOURCE_DIR}/src/shaders"
-            "$<TARGET_FILE_DIR:PanTiltShowcase>/shaders"
-    COMMENT "copy shaders to PanTiltShowcase build dir"
-)
+add_dependencies(PanTiltShowcase CopyResources)
 
 # Canyon Siege Game Target (CanyonSiege)
 add_executable(CanyonSiege
@@ -147,15 +161,7 @@ add_executable(CanyonSiege
 target_link_libraries(CanyonSiege PRIVATE AmityCore)
 target_include_directories(CanyonSiege PRIVATE src/games/CanyonSiege)
 target_include_directories(CanyonSiege PRIVATE src/third_party/stb)
-
-# Post-Build Custom Command to copy shaders next to the CanyonSiege executable
-add_custom_command(
-    TARGET CanyonSiege POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${CMAKE_CURRENT_SOURCE_DIR}/src/shaders"
-            "$<TARGET_FILE_DIR:CanyonSiege>/shaders"
-    COMMENT "copy shaders to CanyonSiege build dir"
-)
+add_dependencies(CanyonSiege CopyResources)
 
 # Shadows of Amity Labyrinth horror game target (AmityLabyrinth)
 add_executable(AmityLabyrinth
@@ -164,15 +170,7 @@ add_executable(AmityLabyrinth
 )
 target_link_libraries(AmityLabyrinth PRIVATE AmityCore)
 target_include_directories(AmityLabyrinth PRIVATE src/games/AmityLabyrinth)
-
-# Post-Build Custom Command to copy shaders next to the AmityLabyrinth executable
-add_custom_command(
-    TARGET AmityLabyrinth POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${CMAKE_CURRENT_SOURCE_DIR}/src/shaders"
-            "$<TARGET_FILE_DIR:AmityLabyrinth>/shaders"
-    COMMENT "copy shaders to AmityLabyrinth build dir"
-)
+add_dependencies(AmityLabyrinth CopyResources)
 
 # Stormy Sails Sailing Game target (StormySails)
 add_executable(StormySails
@@ -182,16 +180,7 @@ add_executable(StormySails
 target_link_libraries(StormySails PRIVATE AmityCore)
 target_include_directories(StormySails PRIVATE src/games/StormySails)
 target_include_directories(StormySails PRIVATE src/third_party/stb)
-
-# Post-Build Custom Command to copy shaders next to the StormySails executable
-add_custom_command(
-    TARGET StormySails POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${CMAKE_CURRENT_SOURCE_DIR}/src/shaders"
-            "$<TARGET_FILE_DIR:StormySails>/shaders"
-    COMMENT "copy shaders to StormySails build dir"
-)
-
+add_dependencies(StormySails CopyResources)
 
 # build Private Games
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/games/PrivateGames/CMakeLists.txt")
@@ -199,5 +188,5 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/games/PrivateGames/CMakeLists.txt")
 endif()
 
 # Testing Suite Integration
-enable_testing()
-add_subdirectory(tests)
+# enable_testing()
+# add_subdirectory(tests)

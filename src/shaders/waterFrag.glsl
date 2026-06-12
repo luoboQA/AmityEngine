@@ -1,5 +1,5 @@
 // from shadertoy: https://www.shadertoy.com/view/MdXyzX
-#version 460 core
+#version 420 core
 
 out vec4 FragColor;
 
